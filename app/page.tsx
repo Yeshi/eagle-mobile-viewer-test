@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import type { TagsGroupsResponse } from "./types/eagle";
+import type { TagsGroupsResponse } from "@/app/types/eagle";
 
 const token = process.env.NEXT_PUBLIC_EAGLE_LOCAL_TOKEN;
 const baseApiUrl = process.env.NEXT_PUBLIC_EAGLE_API_PATH;
