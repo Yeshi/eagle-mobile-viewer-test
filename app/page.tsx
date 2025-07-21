@@ -1,54 +1,33 @@
 "use client";
 
-type EagleItem = {
-  id: string;
-  name: string;
-  ext: string;
-};
-
-type ImageData = {
-  id: string;
-  name: string;
-  url: string;
-};
-
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import type { TagsGroupsResponse } from "./types/eagle";
 
 const token = process.env.NEXT_PUBLIC_EAGLE_LOCAL_TOKEN;
-const baseApiUrl = `http://192.168.1.38:41595/api`;
-const baseImageUrl = `http://192.168.1.38:8080`;
-const tagName = "ながも";
-
-function generateImageList(data: EagleItem[]): ImageData[] {
-  return data.map((item) => ({
-    id: item.id,
-    name: item.name,
-    url: `${baseImageUrl}/${item.id}.info/${encodeURIComponent(item.name)}.${
-      item.ext
-    }`,
-  }));
-}
+const baseApiUrl = process.env.NEXT_PUBLIC_EAGLE_API_PATH;
 
 export default function Home() {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<TagsGroupsResponse["data"] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const url = `${baseApiUrl}/item/list?orderBy=-CREATEDATE&limit=10&tags=${encodeURIComponent(
-          tagName
-        )}&token=${token}`;
+        const url = `${baseApiUrl}/library/info?token=${token}`;
         const res = await fetch(url);
 
         if (!res.ok) {
           throw new Error(`HTTP Error ${res.status}`);
         }
         const json = await res.json();
-        const images = generateImageList(json.data);
-        setData(images);
-      } catch (err: any) {
-        setError(err.message || "Unknown error");
+        setData(json.data);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Unknown error");
+        }
       }
     };
     fetchData();
@@ -58,17 +37,24 @@ export default function Home() {
     <div>
       {error && <p>Error..: {error}</p>}
       {data === null && !error && <p>Loading...</p>}
-      <ul>
-        {data && data.map((img) => (
-          <li key={img.id}>
-            <img
-              src={img.url}
-              alt={img.name}
-              className="max-w-full max-h-screen mb-2"
-            />
-          </li>
-        ))}
-      </ul>
+      {data?.tagsGroups?.map((item) => (
+        <section key={item.id}>
+          <h2 className="mx-2 my-4 p-2 bg-green-200 font-bold text-lg">
+            {item.name}
+          </h2>
+          <ul className="flex flex-wrap mx-4">
+            {item.tags.map((tag) => (
+              <li
+                key={tag}
+                className="w-fit bg-blue-200 px-2 py-1 text-sm text-gray-800 mr-2 mb-2 rounded"
+              >
+                <Link href={`/list?tag=${encodeURIComponent(tag)}`}>{tag}</Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+      <pre>{JSON.stringify(data, null, 2)}</pre>
     </div>
   );
 }

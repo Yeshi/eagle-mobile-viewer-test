@@ -1,3 +1,23 @@
+# これは何
+https://eagle.cool/
+Eagleを立ち上げると localhost:41595 でAPIが立ち上がるので、それを使ってスマホでライブラリを閲覧したいと思って作ってるReact/Nextアプリです。
+
+# どうやって使うの
+- 頑張って localhost:41595 をローカルネットワークのデバイスでアクセスできるようにする。（ファイアーウォールの設定とか）
+- 頑張ってEagleの画像ライブラリフォルダをローカルWebサーバー化する。（Python http serverとか使って eagle.library/images フォルダ以下をサーバーとしてローカルネットワークに公開）
+- .env.localに立ち上げたサーバーの設定を書く
+- このアプリを走らせる
+- 頑張ってスマホからこのアプリにアクセスする
+
+## .env.localの設定
+```
+NEXT_PUBLIC_EAGLE_LOCAL_TOKEN= #環境設定 -> 開発者　から見れるトークンをコピペ
+NEXT_PUBLIC_EAGLE_API_PATH=http://192.168.xxxx.xxx:41595/api #Eagle APIのパス。PCのIPアドレスを入れてね。
+NEXT_PUBLIC_IMAGE_PATH=http://192.168.xxx.xxx:xxxx  #pythonとかで立ち上げた画像サーバーのパス
+```
+
+## 以下Next.jsの説明
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
