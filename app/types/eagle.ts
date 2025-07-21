@@ -10,6 +10,9 @@ export type EagleItem = {
   id: string;
   name: string;
   ext: string;
+  tags: string[]
+  folders: string[]
+  star?: number
 };
 
 // 画像詳細に必要な情報
