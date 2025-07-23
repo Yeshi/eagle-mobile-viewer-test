@@ -28,14 +28,26 @@ export default function ListPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const url = `${baseApiUrl}/item/list?orderBy=-CREATEDATE&limit=90&tags=${tagName}&token=${token}`;
+        const url = `${baseApiUrl}/item/list?orderBy=-CREATEDATE&limit=500&tags=${
+          tagName ? tagName : ""
+        }&token=${token}`;
+
         const res = await fetch(url);
 
         if (!res.ok) {
           throw new Error(`HTTP Error ${res.status}`);
         }
         const json = await res.json();
-        const images = generateImageList(json.data);
+
+        const dataList = tagName
+          ? json.data
+          : json.data.filter(
+              (img: EagleItem) =>
+                (!img.tags || img.tags.length === 0) &&
+                (!img.folders || img.folders.length === 0)
+            );
+
+        const images = generateImageList(dataList);
         setData(images);
       } catch (err: unknown) {
         if (err instanceof Error) {

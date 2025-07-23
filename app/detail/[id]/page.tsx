@@ -21,6 +21,47 @@ export default function DetailPage() {
   const [data, setData] = useState<EagleItem | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [tagInput, setTagInput] = useState("");
+
+  const handleAddClick = () => {
+    setIsEditing(true); // 入力フィールド表示
+  };
+
+  const handleSubmit = async () => {
+    if (!tagInput.trim() || !data) return;
+
+    const mergedTags = Array.from(
+      new Set([...(data.tags || []), tagInput.trim()])
+    );
+
+    try {
+      const res = await fetch(`/api/eagle/item/update`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: data.id,
+          tags: mergedTags,
+          token: token,
+        }),
+      });
+
+      const result = await res.json();
+      console.log("更新成功:", result);
+
+      // 更新後の状態を反映（タグ再取得 or 直接更新）
+      setData({ ...data, tags: mergedTags });
+    } catch (error) {
+      console.error("タグ更新失敗:", error);
+      alert("タグの追加に失敗しました");
+    }
+
+    setTagInput("");
+    setIsEditing(false);
+  };
+
   useEffect(() => {
     if (!id) return;
 
@@ -64,6 +105,30 @@ export default function DetailPage() {
                   {tag}
                 </dd>
               ))}
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSubmit();
+                    } else if (e.key === "Escape") {
+                      setTagInput("");
+                      setIsEditing(false);
+                    }
+                  }}
+                  className="text-ls border-1 p-1"
+                  placeholder="タグを入力"
+                />
+              ) : (
+                <dd
+                  onClick={handleAddClick}
+                  className="text-xs bg-orange-600 px-2 py-1 text-white mr-2 mb-2 rounded w-fit"
+                >
+                  ＋タグ追加
+                </dd>
+              )}
             </dl>
             <dl className="flex flex-wrap">
               <dt className="text-sm font-bold mr-2 w-fit">分類：</dt>
