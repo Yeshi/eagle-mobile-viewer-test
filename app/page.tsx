@@ -5,7 +5,6 @@ import Link from "next/link";
 import type { TagsGroupsResponse } from "@/app/types/eagle";
 
 const token = process.env.NEXT_PUBLIC_EAGLE_LOCAL_TOKEN;
-const baseApiUrl = process.env.NEXT_PUBLIC_EAGLE_API_PATH;
 
 export default function Home() {
   const [data, setData] = useState<TagsGroupsResponse["data"] | null>(null);
@@ -14,7 +13,7 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const url = `${baseApiUrl}/library/info?token=${token}`;
+        const url = `/api/eagle/library/info?token=${token}`;
         const res = await fetch(url);
 
         if (!res.ok) {

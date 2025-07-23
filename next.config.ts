@@ -10,9 +10,9 @@ module.exports = {
   async rewrites() {
     return [
       {
-        source: '/api/eagle/:path*',
-        destination: 'http://192.168.1.38:41595/api/:path*' // EagleのAPI
-      }
+        source: "/api/eagle/:path*",
+        destination: `${process.env.EAGLE_API_PATH}/api/:path*`, // EagleのAPI
+      },
     ];
-  }
+  },
 };

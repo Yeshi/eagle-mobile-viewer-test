@@ -5,7 +5,6 @@ import { useParams, notFound } from "next/navigation";
 import type { EagleItem } from "@/app/types/eagle";
 
 const token = process.env.NEXT_PUBLIC_EAGLE_LOCAL_TOKEN;
-const baseApiUrl = process.env.NEXT_PUBLIC_EAGLE_API_PATH;
 const baseImageUrl = process.env.NEXT_PUBLIC_IMAGE_PATH;
 
 function generateImageUrl(data: EagleItem): string {
@@ -62,12 +61,38 @@ export default function DetailPage() {
     setIsEditing(false);
   };
 
+  // 評価表示
+  const handleStarClick = async (starValue: number) => {
+    if (!data) return;
+    try {
+      const res = await fetch(`/api/eagle/item/update`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: data.id,
+          star: starValue,
+          token: token,
+        }),
+      });
+      const result = await res.json();
+      console.log("評価更新成功:", result);
+
+      // 状態を更新
+      setData({ ...data, star: starValue });
+    } catch (error) {
+      console.error("評価更新失敗:", error);
+      alert("評価の更新に失敗しました");
+    }
+  };
+
   useEffect(() => {
     if (!id) return;
 
     const fetchData = async () => {
       try {
-        const url = `${baseApiUrl}/item/info?id=${id}&token=${token}`;
+        const url = `/api/eagle/item/info?id=${id}&token=${token}`;
         const res = await fetch(url);
         if (!res.ok) return notFound();
 
@@ -140,16 +165,29 @@ export default function DetailPage() {
                 )}
               </dd>
             </dl>
-            <dl className="flex flex-wrap">
+            <dl className="flex flex-wrap mt-2">
               <dt className="text-sm font-bold mr-2 w-fit">評価：</dt>
-              <dd className="text-sm w-fit">星× {data.star ? data.star : 0}</dd>
+              <dd className="text-2xl font-bold w-fit text-yellow-500 tracking-widest">
+                {[1, 2, 3, 4, 5].map((num) => (
+                  <span
+                    key={num}
+                    className="cursor-pointer"
+                    onClick={() => handleStarClick(num)}
+                  >
+                    {num <= (data.star ?? 0) ? "★" : "☆"}
+                  </span>
+                ))}
+              </dd>
             </dl>
           </div>
-          <pre className="mt-4 text-sm bg-gray-100 p-2 rounded">
-            {JSON.stringify(data, null, 2)}
-          </pre>
         </>
       )}
     </div>
   );
 }
+
+/*
+          <pre className="mt-4 text-sm bg-gray-100 p-2 rounded">
+            {JSON.stringify(data, null, 2)}
+          </pre>
+*/
