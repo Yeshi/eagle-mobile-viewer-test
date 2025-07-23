@@ -11,8 +11,8 @@ Eagleを立ち上げると localhost:41595 でAPIが立ち上がるので、そ�
 
 ## .env.localの設定
 ```
-NEXT_PUBLIC_EAGLE_LOCAL_TOKEN= #環境設定 -> 開発者　から見れるトークンを
-EAGLE_API_PATH=http://192.168.xxxx.xxx:41595/api #Eagle APIのパス。PCのIPアドレスを入れてね。
+NEXT_PUBLIC_EAGLE_LOCAL_TOKEN= #環境設定 -> 開発者　から見れるトークンをコピペ
+EAGLE_API_PATH=http://192.168.xxxx.xxx:41595 #Eagle APIのパス。PCのIPアドレスを入れてね。
 NEXT_PUBLIC_IMAGE_PATH=http://192.168.xxx.xxx:xxxx  #pythonとかで立ち上げた画像サーバーのパス
 ```
 
